@@ -1,0 +1,373 @@
+md5
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class JavaApplication82 {
+    public static String getMd5(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] messageDigest = md.digest(input.getBytes());
+        BigInteger no = new BigInteger(1, messageDigest);
+        String hashtext = no.toString(16);
+        while (hashtext.length() < 32) {
+            hashtext = "0" + hashtext;
+        }
+        return hashtext;
+    }
+
+    public static void main(String args[]) throws NoSuchAlgorithmException {
+        String s = " hello guys wlc back to my channel ";
+        System.out.println("MD5 Hash: " + getMd5(s));
+    }
+}
+
+----------------------------------------------------------------------------------
+
+diffi hellman
+
+import java.util.*;
+import java.math.BigInteger;
+
+class pr_6 {
+    public static void main(String[] args) {
+        long P, Q, A, B, s, r, k1, k2;
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter values for Q and P:");
+        Q = sc.nextLong();
+        P = sc.nextLong();
+        System.out.println("Private key for User 1:");
+        s = sc.nextLong();
+        System.out.println("Private key for User 2:");
+        r = sc.nextLong();
+        A = pow(Q, s, P);
+        B = pow(Q, r, P);
+        k1 = pow(B, s, P);
+        k2 = pow(A, r, P);
+        System.out.println("Secret key for User 1: " + k1);
+        System.out.println("Secret key for User 2: " + k2);
+        sc.close();
+    }
+
+    private static long pow(long A, long B, long P) {
+        BigInteger bigA = BigInteger.valueOf(A);
+        BigInteger bigB = BigInteger.valueOf(B);
+        BigInteger bigP = BigInteger.valueOf(P);
+        BigInteger result = bigA.modPow(bigB, bigP);
+        return result.longValue();
+    }
+}
+
+-------------------------------------------------------------------------------------------------
+
+rail fence
+
+public class RailFence {
+    public static String encrypt(String plaintext, int rails) {
+        StringBuilder[] fence = new StringBuilder[rails];
+        for (int i = 0; i < rails; i++) {
+            fence[i] = new StringBuilder();
+        }
+
+        int rail = 0;
+        boolean down = true;
+
+        for (char c : plaintext.toCharArray()) {
+            fence[rail].append(c);
+            if (rail == 0 || rail == rails - 1) {
+                down = !down;
+            }
+            rail += down ? 1 : -1;
+        }
+
+        StringBuilder ciphertext = new StringBuilder();
+        for (StringBuilder railString : fence) {
+            ciphertext.append(railString.toString());
+        }
+
+        return ciphertext.toString();
+    }
+
+    public static String decrypt(String ciphertext, int rails) {
+        StringBuilder[] fence = new StringBuilder[rails];
+        for (int i = 0; i < rails; i++) {
+            fence[i] = new StringBuilder();
+        }
+
+        int rail = 0;
+        boolean down = true;
+
+        for (int i = 0; i < ciphertext.length(); i++) {
+            fence[rail].append(' ');
+            if (rail == 0 || rail == rails - 1) {
+                down = !down;
+            }
+            rail += down ? 1 : -1;
+        }
+
+        int index = 0;
+        for (int i = 0; i < rails; i++) {
+            for (int j = 0; j < fence[i].length(); j++) {
+                fence[i].setCharAt(j, ciphertext.charAt(index++));
+            }
+        }
+
+        rail = 0;
+        down = true;
+        StringBuilder plaintext = new StringBuilder();
+
+        for (int i = 0; i < ciphertext.length(); i++) {
+            plaintext.append(fence[rail].charAt(0));
+            fence[rail].deleteCharAt(0);
+            if (rail == 0 || rail == rails - 1) {
+                down = !down;
+            }
+            rail += down ? 1 : -1;
+        }
+
+        return plaintext.toString();
+    }
+
+    public static void main(String[] args) {
+        String plaintext = "shubham salunkhe is the best";
+        int rails = 5;
+
+        // Encryption
+        String encrypted = encrypt(plaintext, rails);
+        System.out.println("Encrypted: " + encrypted);
+
+        // Decryption
+        String decrypted = decrypt(encrypted, rails);
+        System.out.println("Decrypted: " + decrypted);
+    }
+}
+-------------------------------------------------------------------------------------------------------------------
+
+vernam
+
+public class desandaes {
+    public static void main(String[] args) {
+        String plaintext = "hello";
+        String key = "yspme";
+        String encrypted = encrypt(plaintext,key);
+        String decrypted = derypt(encrypted,key);
+        System.out.println("cipher" + encrypted);
+        System.out.println("cipher" + decrypted );
+        
+        
+    }
+    public static String encrypt(String text, String key){
+        StringBuilder res = new StringBuilder();
+        for(int i = 0; i < text.length();i++){
+            int x = (text.charAt(i) - 'a' + key.charAt(i % key.length()) - 'a') % 26 + 'a';
+            res.append((char)x);
+            
+            
+            
+        }
+        return res.toString();
+    }
+    public static String derypt(String dec, String key){
+        StringBuilder reso = new StringBuilder();
+        for(int i = 0 ; i < dec.length();i++){
+            int x = (dec.charAt(i) - 'a' - (key.charAt(i % key.length()) - 'a') + 26) % 26 + 'a';
+            reso.append((char) x);
+            
+        }
+        return reso.toString();
+    }   
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------
+rsa alorithm
+
+import java.math.BigInteger;
+import java.util.Random;
+
+public class RSA {
+    private BigInteger privateKey, publicKey, modulus;
+
+    public RSA(int bitLength) {
+        generateKeys(bitLength);
+    }
+
+    public void generateKeys(int bitLength) {
+        Random rand = new Random();
+        BigInteger p = BigInteger.probablePrime(bitLength, rand);
+        BigInteger q = BigInteger.probablePrime(bitLength, rand);
+
+        modulus = p.multiply(q);
+        BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+
+        publicKey = BigInteger.valueOf(65537);
+        privateKey = publicKey.modInverse(phi);
+    }
+
+    public BigInteger encrypt(BigInteger message) {
+        return message.modPow(publicKey, modulus);
+    }
+
+    public BigInteger decrypt(BigInteger ciphertext) {
+        return ciphertext.modPow(privateKey, modulus);
+    }
+
+    public static void main(String[] args) {
+        RSA rsa = new RSA(1024);
+
+        String originalMessage = "this is me shubham";
+        BigInteger message = new BigInteger(originalMessage.getBytes());
+
+        BigInteger encryptedMessage = rsa.encrypt(message);
+        System.out.println("Encrypted: " + encryptedMessage);
+
+        BigInteger decryptedMessage = rsa.decrypt(encryptedMessage);
+        String decryptedString = new String(decryptedMessage.toByteArray());
+        System.out.println("Decrypted: " + decryptedString);
+    }
+}
+------------------------------------------------------------------------------------------------------
+
+hmac
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class Hash_SHA1 {
+    public static String encryptString(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] messageDigest = md.digest(input.getBytes());
+            BigInteger no = new BigInteger(1, messageDigest);
+            String hashText = no.toString(16);
+            while (hashText.length() < 32) {
+                hashText = "0" + hashText;
+            }
+            return hashText;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("SHA-1 Hash Codes:");
+        String s1 = "shubham is pro";
+        System.out.println(s1 + ": " + encryptString(s1));
+    
+    }
+}
+
+----------------------------------------------------------------------------------
+
+des
+
+
+import javax.crypto.*;
+import java.util.Base64;
+
+class DESExample {
+    Cipher ecipher;
+    Cipher dcipher;
+
+    DESExample(SecretKey key) throws Exception {
+        ecipher = Cipher.getInstance("DES");
+        dcipher = Cipher.getInstance("DES");
+        ecipher.init(Cipher.ENCRYPT_MODE, key);
+        dcipher.init(Cipher.DECRYPT_MODE, key);
+    }
+
+    public String encrypt(String str) throws Exception {
+        byte[] utf8 = str.getBytes("UTF8");
+        byte[] enc = ecipher.doFinal(utf8);
+        return Base64.getEncoder().encodeToString(enc);
+    }
+
+    public String decrypt(String str) throws Exception {
+        byte[] dec = Base64.getDecoder().decode(str);
+        byte[] utf8 = dcipher.doFinal(dec);
+        return new String(utf8, "UTF8");
+    }
+
+    public static void main(String[] argv) throws Exception {
+        final String secretText = "www.knowledgefactory.net";
+        System.out.println("SecretText: " + secretText);
+        SecretKey key = KeyGenerator.getInstance("DES").generateKey();
+        DESExample encrypter = new DESExample(key);
+        String encrypted = encrypter.encrypt(secretText);
+        System.out.println("Encrypted Value: " + encrypted);
+        String decrypted = encrypter.decrypt(encrypted);
+        System.out.println("Decrypted: " + decrypted);
+    }
+}
+
+
+
+
+
+
+
+aes
+
+
+
+
+import javax.crypto.*;
+import java.util.Base64;
+
+public class AES {
+    Cipher cipher;
+
+    AES(SecretKey key, int mode) {
+        try {
+            cipher = Cipher.getInstance("AES");
+            cipher.init(mode, key);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public String process(String input) {
+        try {
+            byte[] utf8 = input.getBytes("UTF8");
+            byte[] processed = cipher.doFinal(utf8);
+            return Base64.getEncoder().encodeToString(processed);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public static void main(String args[]) {
+        try {
+            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+            SecretKey key = keyGen.generateKey();
+            AES encrypter = new AES(key, Cipher.ENCRYPT_MODE);
+            AES decrypter = new AES(key, Cipher.DECRYPT_MODE);
+
+            String originalText = "Tomorrow is Tuesday";
+            String encryptedText = encrypter.process(originalText);
+            String decryptedText = decrypter.process(encryptedText);
+
+            System.out.println("Original Text: " + originalText);
+            System.out.println("Encrypted Text: " + encryptedText);
+            System.out.println("Decrypted Text: " + decryptedText);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
