@@ -337,4 +337,71 @@ namespace gp7
 
 
 
+
+
+
+
+
+
+
+
+
+
+ufo
+
+
+
+
+
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class playercontroller : MonoBehaviour
+{
+    public float speed;
+    private Rigidbody2D rBody;
+    public Text counttext;
+    public float count;
+    public Text wintext;
+
+    void Start()
+    {
+        count = 0;
+        speed = 15;
+        rBody = GetComponent<Rigidbody2D>();
+
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+        rBody.AddForce(new Vector2(horizontalInput, verticalInput) * speed);
+    }
+    private void OnTriggerEnter2D(Collider2D target)
+    {
+        Destroy(target.gameObject);
+        Count();
+    }
+    void Count()
+    {
+        count = count + 1;
+        counttext.text = "count : " + count.ToString();
+        if (count >= 4)
+        {
+            wintext.text = " you win " + wintext.ToString();
+        }
+    }
+
+}
+
+
+
+
+
+
 ------------------------------------------------------end-----------------------------------------------------
